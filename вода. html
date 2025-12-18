@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Уровень воды в апреле 2023</title>
+    <!-- Подключаем библиотеку Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Arial, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding: 30px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .container {
+            max-width: 1100px;
+            width: 100%;
+            background-color: white;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(50, 50, 93, 0.1), 0 5px 15px rgba(0, 0, 0, 0.07);
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eaeaea;
+        }
+        
+        h1 {
+            color: #2c3e50;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            color: #7f8c8d;
+            font-size: 1.1rem;
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 70vh;
+            width: 100%;
+            margin: 20px 0;
+        }
+        
+        .stats {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            gap: 20px;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #eaeaea;
+        }
+        
+        .stat-card {
+            background: linear-gradient(to right, #3498db, #2c80b9);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            min-width: 200px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+        }
+        
+        .stat-card h3 {
+            font-size: 1.8rem;
+            margin-bottom: 8px;
+        }
+        
+        .stat-card p {
+            font-size: 0.95rem;
+            opacity: 0.9;
+        }
+        
+        .stat-card:nth-child(2) {
+            background: linear-gradient(to right, #2ecc71, #27ae60);
+            box-shadow: 0 5px 15px rgba(46, 204, 113, 0.3);
+        }
+        
+        .stat-card:nth-child(3) {
+            background: linear-gradient(to right, #e74c3c, #c0392b);
+            box-shadow: 0 5px 15px rgba(231, 76, 60, 0.3);
+        }
+        
+        .stat-card:nth-child(4) {
+            background: linear-gradient(to right, #9b59b6, #8e44ad);
+            box-shadow: 0 5px 15px rgba(155, 89, 182, 0.3);
+        }
+        
+        .description {
+            background-color: #f8f9fa;
+            border-left: 5px solid #3498db;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 30px;
+            line-height: 1.6;
+            color: #34495e;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px 15px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .chart-container {
+                height: 50vh;
+            }
+            
+            .stat-card {
+                min-width: 150px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Динамика уровня воды в реке</h1>
+            <p class="subtitle">Апрель 2023 года, ежедневные измерения в 8:00</p>
+        </header>
+        
+        <div class="chart-container">
+            <canvas id="waterChart"></canvas>
+        </div>
+        
+        <div class="stats">
+            <div class="stat-card">
+                <h3>174.6 см</h3>
+                <p>Средний уровень за месяц</p>
+            </div>
+            <div class="stat-card">
+                <h3>247 см</h3>
+                <p>Размах (макс - мин)</p>
+            </div>
+            <div class="stat-card">
+                <h3>302 см</h3>
+                <p>Максимальный уровень (7 апреля)</p>
+            </div>
+            <div class="stat-card">
+                <h3>55 см</h3>
+                <p>Минимальный уровень (21 апреля)</p>
+            </div>
+        </div>
+        
+        <div class="description">
+            <p><strong>Анализ графика:</strong> На графике хорошо видна динамика изменения уровня воды в течение апреля 2023 года. В первой декаде месяца наблюдается высокий уровень воды (пик 302 см 7 апреля), что характерно для весеннего паводка. Затем происходит резкое снижение уровня ко второй половине месяца, с последующей стабилизацией и небольшим подъёмом в последние дни апреля.</p>
+        </div>
+    </div>
+    
+    <footer>
+        <p>Визуализация данных с использованием Chart.js | Данные: гидрологические измерения</p>
+    </footer>
+
+    <script>
+        // Данные за апрель 2023
+        const days = Array.from({length: 30}, (_, i) => i + 1); // 1, 2, 3, ..., 30
+        
+        const waterLevels = [
+            264, 274, 260, 257, 278, 296, 302, 293, 289, 264, 
+            226, 184, 155, 139, 129, 125, 113, 95, 80, 63, 
+            55, 57, 57, 75, 84, 86, 80, 75, 72, 89
+        ];
+        
+        // Находим максимальное и минимальное значение для аннотаций
+        const maxLevel = Math.max(...waterLevels);
+        const minLevel = Math.min(...waterLevels);
+        const maxDay = days[waterLevels.indexOf(maxLevel)];
+        const minDay = days[waterLevels.indexOf(minLevel)];
+        
+        // Настройка графика
+        const ctx = document.getElementById('waterChart').getContext('2d');
+        const waterChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: days,
+                datasets: [{
+                    label: 'Уровень воды (см)',
+                    data: waterLevels,
+                    backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                    borderColor: 'rgba(52, 152, 219, 1)',
+                    borderWidth: 3,
+                    pointBackgroundColor: function(context) {
+                        const index = context.dataIndex;
+                        const value = context.dataset.data[index];
+                        if (value === maxLevel) return 'rgba(231, 76, 60, 1)'; // Красный для максимума
+                        if (value === minLevel) return 'rgba(46, 204, 113, 1)'; // Зеленый для минимума
+                        return 'rgba(52, 152, 219, 1)'; // Синий для остальных
+                    },
+                    pointBorderColor: '#fff',
+                    pointBorderWidth: 2,
+                    pointRadius: function(context) {
+                        const index = context.dataIndex;
+                        const value = context.dataset.data[index];
+                        if (value === maxLevel || value === minLevel) return 8;
+                        return 5;
+                    },
+                    pointHoverRadius: 10,
+                    fill: true,
+                    tension: 0.3, // Сглаживание линии
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: {
+                    intersect: false,
+                    mode: 'index',
+                },
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return `Уровень: ${context.parsed.y} см`;
+                            },
+                            title: function(context) {
+                                return `${context[0].label} апреля`;
+                            }
+                        }
+                    },
+                    legend: {
+                        labels: {
+                            font: {
+                                size: 14
+                            },
+                            padding: 20
+                        }
+                    },
+                    annotation: {
+                        annotations: {
+                            maxPoint: {
+                                type: 'label',
+                                xValue: maxDay,
+                                yValue: maxLevel,
+                                content: [`Максимум: ${maxLevel} см`, `${maxDay} апреля`],
+                                backgroundColor: 'rgba(231, 76, 60, 0.8)',
+                                color: 'white',
+                                font: {
+                                    size: 12,
+                                    weight: 'bold'
+                                },
+                                padding: 10,
+                                borderRadius: 6,
+                                textAlign: 'center'
+                            },
+                            minPoint: {
+                                type: 'label',
+                                xValue: minDay,
+                                yValue: minLevel,
+                                content: [`Минимум: ${minLevel} см`, `${minDay} апреля`],
+                                backgroundColor: 'rgba(46, 204, 113, 0.8)',
+                                color: 'white',
+                                font: {
+                                    size: 12,
+                                    weight: 'bold'
+                                },
+                                padding: 10,
+                                borderRadius: 6,
+                                textAlign: 'center'
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'День апреля',
+                            font: {
+                                size: 15,
+                                weight: 'bold'
+                            },
+                            padding: {top: 10, bottom: 10}
+                        },
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.05)'
+                        },
+                        ticks: {
+                            font: {
+                                size: 12
+                            }
+                        }
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Уровень воды (см)',
+                            font: {
+                                size: 15,
+                                weight: 'bold'
+                            },
+                            padding: {top: 10, bottom: 10}
+                        },
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.05)'
+                        },
+                        ticks: {
+                            font: {
+                                size: 12
+                            }
+                        },
+                        suggestedMin: 40,
+                        suggestedMax: 320
+                    }
+                }
+            }
+        });
+        
+        // Функция для обновления статистики при наведении на график
+        waterChart.canvas.addEventListener('mousemove', function(event) {
+            const points = waterChart.getElementsAtEventForMode(event, 'nearest', {intersect: false}, true);
+            
+            if (points.length > 0) {
+                const firstPoint = points[0];
+                const day = firstPoint.index + 1;
+                const level = waterLevels[firstPoint.index];
+                
+                // Можно добавить динамическое обновление статистики при наведении
+                // document.getElementById('currentDay').textContent = day;
+                // document.getElementById('currentLevel').textContent = level + ' см';
+            }
+        });
+    </script>
+</body>
+</html>
